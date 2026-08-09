@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}EcoSphere - Carbon Footprint Calculator{% endblock %}
+{% block page_header %}Carbon Footprint Calculator{% endblock %}
+
+{% block content %}
+<div class="quiz-wizard">
+    {% if latest %}
+    <!-- Latest Result Card -->
+    <div class="card-glass active-glow" id="latestResultCard" style="margin-bottom: 2rem; padding: 2.5rem 2rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <i data-lucide="activity" style="width: 48px; height: 48px; color: var(--primary); margin-bottom: 0.75rem;"></i>
+            <h2 style="font-weight: 800; font-size: 1.8rem; margin-bottom: 0.25rem;">Your Carbon Footprint Score</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Last calculated on {{ latest.date.strftime('%B %d, %Y') }}</p>
+        </div>
+        
+        <div class="carbon-result-grid">
+            <div class="carbon-score-display">
+                <div class="carbon-score-val">{{ latest.total_emissions }}</div>
+                <div class="carbon-score-unit">kg CO2e / month</div>
+                <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 8px; font-size: 0.85rem; color: var(--text-muted);">
+                    National Target Average: <strong style="color: var(--success);">350 kg</strong>
+                </div>
+            </div>
+            
+            <div>
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem;">Footprint Breakdown</h3>
+                
+                <!-- Transport Breakdown -->
+                <div style="margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                        <span><i data-lucide="car" style="width: 14px; height: 14px; color: var(--primary); vertical-align: middle;"></i> Transport</span>
+                        <strong>{{ latest.transport_emissions }} kg CO2e</strong>
+                    </div>
+                    <div class="quiz-progress-bar" style="height: 8px; margin-bottom: 0;">
+                        {% set trans_pct = (latest.transport_emissions / latest.total_emissions * 100) if latest.total_emissions > 0 else 0 %}
+                        <div class="quiz-progress-fill" style="width: {{ trans_pct }}%; background: var(--primary);"></div>
+                    </div>
+                </div>
+                
+                <!-- Energy Breakdown -->
+                <div style="margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                        <span><i data-lucide="zap" style="width: 14px; height: 14px; color: var(--info); vertical-align: middle;"></i> Energy</span>
+                        <strong>{{ latest.energy_emissions }} kg CO2e</strong>
+                    </div>
+                    <div class="quiz-progress-bar" style="height: 8px; margin-bottom: 0;">
+                        {% set energy_pct = (latest.energy_emissions / latest.total_emissions * 100) if latest.total_emissions > 0 else 0 %}
+                        <div class="quiz-progress-fill" style="width: {{ energy_pct }}%; background: var(--info);"></div>
+                    </div>
+                </div>
+                
+                <!-- Waste Breakdown -->
+                <div style="margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                        <span><i data-lucide="trash-2" style="width: 14px; height: 14px; color: var(--warning); vertical-align: middle;"></i> Waste</span>
+                        <strong>{{ latest.waste_emissions }} kg CO2e</strong>
+                    </div>
+                    <div class="quiz-progress-bar" style="height: 8px; margin-bottom: 0;">
+                        {% set waste_pct = (latest.waste_emissions / latest.total_emissions * 100) if latest.total_emissions > 0 else 0 %}
+                        <div class="quiz-progress-fill" style="width: {{ waste_pct }}%; background: var(--warning);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem; border-top: 1px solid var(--border-glass); padding-top: 1.5rem;">
+            <button id="toggleQuizBtn" class="btn-primary">
+                <i data-lucide="refresh-cw"></i> Recalculate Footprint
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Calculator Wizard Form -->
+    <div class="card-glass" id="quizWizardCard" style="{% if latest %}display: none;{% endif %} padding: 2.5rem 2rem;">
+        <h2 style="font-weight: 800; font-size: 1.5rem; margin-bottom: 0.5rem; text-align: center;">Carbon Footprint Estimator</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-bottom: 1.5rem;">
+            Answer a few quick questions to estimate your monthly ecological impact.
+        </p>
+        
+        <!-- Progress Bar Indicator -->
+        <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill"></div>
+        </div>
+        
+        <form id="carbonQuizWizard" method="POST" action="{{ url_for('main.carbon') }}">
+            <!-- STEP 1: Transport -->
+            <div class="quiz-step active">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="car" style="color: var(--primary);"></i> Step 1: Transport Habits
+                </h3>
+                
+                <div class="form-group">
+                    <label for="transport_km" class="form-label">Average Weekly Travel Distance (km)</label>
+                    <input type="number" min="0" id="transport_km" name="transport_km" class="form-control" placeholder="e.g. 50" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transport_type" class="form-label">Primary Transport Mode</label>
+                    <select id="transport_type" name="transport_type" class="form-control" required>
+                        <option value="" disabled selected>Select mode...</option>
+                        <option value="car_fossil">Petrol / Diesel Vehicle</option>
+                        <option value="car_hybrid">Hybrid Vehicle</option>
+                        <option value="car_electric">Electric Vehicle (EV)</option>
+                        <option value="public">Public Transit (Bus / Train)</option>
+                        <option value="walk_bike">Active Travel (Walking / Cycling)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- STEP 2: Energy -->
+            <div class="quiz-step">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="zap" style="color: var(--info);"></i> Step 2: Household Energy
+                </h3>
+                
+                <div class="form-group">
+                    <label for="electricity_kwh" class="form-label">Monthly Electricity Consumption (kWh)</label>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Check your utility bill or estimate (Standard household: ~150-300 kWh)</p>
+                    <input type="number" min="0" id="electricity_kwh" name="electricity_kwh" class="form-control" placeholder="e.g. 200" required>
+                </div>
+            </div>
+            
+            <!-- STEP 3: Waste -->
+            <div class="quiz-step">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="trash-2" style="color: var(--warning);"></i> Step 3: Waste & Recycling
+                </h3>
+                
+                <div class="form-group">
+                    <label for="waste_kg" class="form-label">Estimated Weekly Waste Generated (kg)</label>
+                    <input type="number" min="0" step="0.1" id="waste_kg" name="waste_kg" class="form-control" placeholder="e.g. 10" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="recycling_rate" class="form-label" style="display: flex; justify-content: space-between;">
+                        <span>Recycling Rate (%)</span>
+                        <strong id="rateDisplay" style="color: var(--primary);">50%</strong>
+                    </label>
+                    <input type="range" min="0" max="100" value="50" id="recycling_rate" name="recycling_rate" class="form-control" style="cursor: pointer; padding: 0.25rem 0;" oninput="updateRateLabel(this.value)">
+                </div>
+            </div>
+            
+            <!-- Navigation buttons -->
+            <div class="quiz-nav">
+                <button type="button" id="prevStepBtn" class="btn-glass"><i data-lucide="chevron-left"></i> Back</button>
+                <button type="button" id="nextStepBtn" class="btn-primary">Next <i data-lucide="chevron-right"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Slider label updates
+    function updateRateLabel(val) {
+        document.getElementById('rateDisplay').textContent = val + '%';
+    }
+
+    // Toggle between quiz results and recalculating wizard
+    const toggleBtn = document.getElementById('toggleQuizBtn');
+    const resultCard = document.getElementById('latestResultCard');
+    const quizCard = document.getElementById('quizWizardCard');
+
+    if (toggleBtn && resultCard && quizCard) {
+        toggleBtn.addEventListener('click', () => {
+            resultCard.style.display = 'none';
+            quizCard.style.display = 'block';
+            
+            // Re-initialize slider rates
+            updateRateLabel(document.getElementById('recycling_rate').value);
+        });
+    }
+</script>
+{% endblock %}

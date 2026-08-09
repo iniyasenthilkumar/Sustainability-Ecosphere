@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}EcoSphere - Tree Plantation Tracker{% endblock %}
+{% block page_header %}Tree Plantation Tracker{% endblock %}
+
+{% block content %}
+<div class="tracker-layout">
+    <!-- Left Column: Input Form & Quick Stats -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Log Form -->
+        <div class="card-glass active-glow">
+            <h3 class="card-title" style="margin-bottom: 1.25rem;"><i data-lucide="plus"></i> Log Tree Planted</h3>
+            
+            <form method="POST" action="{{ url_for('main.tree') }}">
+                <div class="form-group">
+                    <label for="tree_species" class="form-label">Tree Species / Type</label>
+                    <input type="text" id="tree_species" name="tree_species" class="form-control" placeholder="e.g. Oak, Neem, Mango" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="number" min="1" id="quantity" name="quantity" class="form-control" value="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location" class="form-label">Location / Site Details</label>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="e.g. Backyard, Community garden" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date" class="form-label">Plantation Date</label>
+                    <input type="date" id="date" name="date" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+                    Record Plantation <i data-lucide="check"></i>
+                </button>
+            </form>
+        </div>
+        
+        <!-- Stats summary -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="bar-chart-2"></i> Plantation Summary</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);">Total Trees Planted</span>
+                    <strong style="color: var(--primary);">{{ stats.total }} Trees</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-bottom: 0.25rem;">
+                    <span style="color: var(--text-muted);">Logging Records</span>
+                    <strong>{{ stats.count }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Trends Graph & History Log -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Trends Chart -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="sprout"></i> Species Variety Distribution</h3>
+            <div class="chart-container">
+                <canvas id="treeChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Logs Table -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="history"></i> Plantation History</h3>
+            
+            <div class="table-responsive" style="max-height: 380px;">
+                <table class="table-glass">
+                    <thead>
+                        <tr>
+                            <th>Species</th>
+                            <th>Quantity</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td><strong>{{ log.tree_species }}</strong></td>
+                            <td><span class="badge badge-success" style="font-size: 0.8rem; padding: 0.2rem 0.6rem;">x{{ log.quantity }}</span></td>
+                            <td>{{ log.location }}</td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">{{ log.date.strftime('%b %d, %Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% if not logs %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                No plantation records found. Log your first sapling!
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Autofill date field with today's local date
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

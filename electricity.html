@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}EcoSphere - Electricity Usage Tracker{% endblock %}
+{% block page_header %}Electricity Usage Tracker{% endblock %}
+
+{% block content %}
+<div class="tracker-layout">
+    <!-- Left Column: Input Form & Quick Stats -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Log Form -->
+        <div class="card-glass active-glow">
+            <h3 class="card-title" style="margin-bottom: 1.25rem;"><i data-lucide="plus"></i> Log Electricity Usage</h3>
+            
+            <form method="POST" action="{{ url_for('main.electricity') }}">
+                <div class="form-group">
+                    <label for="kwh" class="form-label">Electricity Consumed (kWh)</label>
+                    <input type="number" step="0.01" id="kwh" name="kwh" class="form-control" placeholder="e.g. 12.5" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date" class="form-label">Logging Date</label>
+                    <input type="date" id="date" name="date" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes" class="form-label">Notes / Description (Optional)</label>
+                    <input type="text" id="notes" name="notes" class="form-control" placeholder="e.g. Daily meter reading, AC system run">
+                </div>
+                
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+                    Save Log Entry <i data-lucide="check"></i>
+                </button>
+            </form>
+        </div>
+        
+        <!-- Stats summary -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="bar-chart-2"></i> Statistics</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);">Total Consumed</span>
+                    <strong style="color: var(--warning);">{{ stats.total }} kWh</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);">Average Per Entry</span>
+                    <strong>{{ stats.average }} kWh</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-bottom: 0.25rem;">
+                    <span style="color: var(--text-muted);">Total Logs Recorded</span>
+                    <strong>{{ stats.count }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Trends Graph & History Log -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Trends Chart -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="trending-up"></i> Consumption Trends</h3>
+            <div class="chart-container">
+                <canvas id="electricityChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Logs Table -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="history"></i> Usage History</h3>
+            
+            <div class="table-responsive" style="max-height: 380px;">
+                <table class="table-glass">
+                    <thead>
+                        <tr>
+                            <th>Quantity (kWh)</th>
+                            <th>Date</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td><strong>{{ log.kwh }} kWh</strong></td>
+                            <td>{{ log.date.strftime('%b %d, %Y') }}</td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">{{ log.notes or '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% if not logs %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                No logs found. Start tracking by submitting the form.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Autofill date field with today's local date
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

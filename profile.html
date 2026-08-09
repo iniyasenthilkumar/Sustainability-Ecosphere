@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}EcoSphere - User Profile{% endblock %}
+{% block page_header %}User Profile{% endblock %}
+
+{% block content %}
+<div class="profile-grid">
+    <!-- Left Column: Avatar Card & Milestones Summary -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Avatar card -->
+        <div class="card-glass profile-avatar-card active-glow">
+            <div class="user-avatar">
+                {{ current_user.username[0] | upper }}
+            </div>
+            <h2 style="font-weight: 800; font-size: 1.5rem; margin-bottom: 0.25rem;">{{ current_user.username }}</h2>
+            <p style="color: var(--primary); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Eco Activist</p>
+            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">Joined EcoSphere on {{ stats.join_date }}</p>
+        </div>
+        
+        <!-- Milestones Summary -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1.25rem;"><i data-lucide="award"></i> Eco Milestones</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);"><i data-lucide="droplet" style="width: 14px; height: 14px; vertical-align: middle; color: var(--info); margin-right: 0.25rem;"></i> Water Logged</span>
+                    <strong>{{ stats.water }} Liters</strong>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);"><i data-lucide="zap" style="width: 14px; height: 14px; vertical-align: middle; color: var(--warning); margin-right: 0.25rem;"></i> Power Saved</span>
+                    <strong>{{ stats.electricity }} kWh</strong>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);"><i data-lucide="trash-2" style="width: 14px; height: 14px; vertical-align: middle; color: var(--danger); margin-right: 0.25rem;"></i> Waste Managed</span>
+                    <strong>{{ stats.waste }} kg</strong>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.25rem;">
+                    <span style="color: var(--text-muted);"><i data-lucide="sprout" style="width: 14px; height: 14px; vertical-align: middle; color: var(--secondary); margin-right: 0.25rem;"></i> Saplings Planted</span>
+                    <strong>{{ stats.trees }} Trees</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Settings Form & Goals checklist -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Settings Form -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1.25rem;"><i data-lucide="settings"></i> Profile Settings</h3>
+            
+            <form method="POST" action="{{ url_for('main.profile') }}">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">Username changes are restricted for security.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ current_user.email }}" required>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid var(--border-glass); margin: 1.5rem 0;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem;">Update Password (Optional)</h4>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">New Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter new password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm new password">
+                </div>
+                
+                <button type="submit" class="btn-primary" style="margin-top: 0.5rem;">
+                    Save Changes <i data-lucide="save"></i>
+                </button>
+            </form>
+        </div>
+        
+        <!-- Gamified Goals Widget -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="check-square"></i> Active Sustainability Goals</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Goal 1: Tree planting -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                        <span>Plant 5 trees</span>
+                        <strong>{{ stats.trees }} / 5</strong>
+                    </div>
+                    <div class="quiz-progress-bar" style="height: 6px; margin-bottom: 0;">
+                        {% set trees_pct = (stats.trees / 5 * 100) if stats.trees < 5 else 100 %}
+                        <div class="quiz-progress-fill" style="width: {{ trees_pct }}%; background: var(--success);"></div>
+                    </div>
+                </div>
+                
+                <!-- Goal 2: Water savings -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                        <span>Divert 20kg of waste (Reduce/Reuse/Recycle)</span>
+                        <strong>{{ stats.waste }} / 20 kg</strong>
+                    </div>
+                    <div class="quiz-progress-bar" style="height: 6px; margin-bottom: 0;">
+                        {% set waste_pct = (stats.waste / 20 * 100) if stats.waste < 20 else 100 %}
+                        <div class="quiz-progress-fill" style="width: {{ waste_pct }}%; background: var(--info);"></div>
+                    </div>
+                </div>
+                
+                <!-- Goal 3: Carbon baseline check -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                        <span>Run a Carbon Footprint Baseline Test</span>
+                        <strong>{% if stats.water > 0 or stats.trees > 0 or stats.waste > 0 %}1 / 1{% else %}0 / 1{% endif %}</strong>
+                    </div>
+                    <div class="quiz-progress-bar" style="height: 6px; margin-bottom: 0;">
+                        <div class="quiz-progress-fill" style="width: {% if stats.water > 0 or stats.trees > 0 or stats.waste > 0 %}100{% else %}0{% endif %}%; background: var(--primary);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

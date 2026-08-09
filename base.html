@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EcoSphere - Sustainability Management Platform{% endblock %}</title>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Flask Flash Message Toast Containers -->
+    <div class="alert-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            {% if category == 'success' %}
+                                <i data-lucide="check-circle" style="color: var(--success)"></i>
+                            {% elif category == 'danger' %}
+                                <i data-lucide="alert-triangle" style="color: var(--danger)"></i>
+                            {% elif category == 'warning' %}
+                                <i data-lucide="alert-circle" style="color: var(--warning)"></i>
+                            {% else %}
+                                <i data-lucide="info" style="color: var(--info)"></i>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                        <button class="alert-close">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="app-container">
+        {% if current_user.is_authenticated %}
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <a href="{{ url_for('main.dashboard') }}" class="brand">
+                <i data-lucide="leaf"></i>
+                <span>EcoSphere</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <li>
+                    <a href="{{ url_for('main.dashboard') }}" class="nav-link {% if request.path == '/' or request.path == '/dashboard' %}active{% endif %}">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.water') }}" class="nav-link {% if '/trackers/water' in request.path %}active{% endif %}">
+                        <i data-lucide="droplet"></i>
+                        <span>Water Tracker</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.electricity') }}" class="nav-link {% if '/trackers/electricity' in request.path %}active{% endif %}">
+                        <i data-lucide="zap"></i>
+                        <span>Electricity Tracker</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.waste') }}" class="nav-link {% if '/trackers/waste' in request.path %}active{% endif %}">
+                        <i data-lucide="trash-2"></i>
+                        <span>Waste Tracker</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.tree') }}" class="nav-link {% if '/trackers/tree' in request.path %}active{% endif %}">
+                        <i data-lucide="sprout"></i>
+                        <span>Tree Plantation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.carbon') }}" class="nav-link {% if '/calculator/carbon' in request.path %}active{% endif %}">
+                        <i data-lucide="activity"></i>
+                        <span>Carbon Footprint</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.profile') }}" class="nav-link {% if '/profile' in request.path %}active{% endif %}">
+                        <i data-lucide="user"></i>
+                        <span>User Profile</span>
+                    </a>
+                </li>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-snippet">
+                    <div class="user-avatar">
+                        {{ current_user.username[0] | upper }}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ current_user.username }}</div>
+                        <div class="user-role">Eco Activist</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('main.logout') }}" class="logout-btn">
+                    <i data-lucide="log-out"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+        {% endif %}
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            {% if current_user.is_authenticated %}
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="mobile-menu-toggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h1 class="page-title">{% block page_header %}Dashboard{% endblock %}</h1>
+                </div>
+                <div class="date-badge">
+                    <i data-lucide="calendar"></i>
+                    <span id="currentDateString"></span>
+                </div>
+            </header>
+            {% endif %}
+            
+            <div class="content-body">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Script to set header date string -->
+    <script>
+        const dateSpan = document.getElementById('currentDateString');
+        if (dateSpan) {
+            const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            dateSpan.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+    </script>
+    
+    <!-- Custom Application Logic -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

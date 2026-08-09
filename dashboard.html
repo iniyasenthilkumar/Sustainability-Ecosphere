@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}EcoSphere - Dashboard{% endblock %}
+{% block page_header %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<!-- Daily Eco Tip Banner -->
+<div class="card-glass tip-widget" style="margin-bottom: 2rem; padding: 1.25rem 2rem;">
+    <div class="tip-header">
+        <i data-lucide="lightbulb"></i>
+        <span>Daily Eco-Tip &bull; {{ tip.category }}</span>
+    </div>
+    <p class="tip-content">"{{ tip.tip }}"</p>
+</div>
+
+<!-- Quick Statistics Grid -->
+<div class="grid-stats">
+    <div class="card-glass stat-card">
+        <div class="stat-icon"><i data-lucide="droplet"></i></div>
+        <div>
+            <div class="stat-value">{{ stats.total_water }} L</div>
+            <div class="stat-label">Total Water Logged</div>
+        </div>
+    </div>
+    
+    <div class="card-glass stat-card">
+        <div class="stat-icon"><i data-lucide="zap"></i></div>
+        <div>
+            <div class="stat-value">{{ stats.total_electricity }} kWh</div>
+            <div class="stat-label">Total Electricity Logged</div>
+        </div>
+    </div>
+    
+    <div class="card-glass stat-card">
+        <div class="stat-icon"><i data-lucide="trash-2"></i></div>
+        <div>
+            <div class="stat-value">{{ stats.total_waste }} kg</div>
+            <div class="stat-label">Waste Diverted</div>
+        </div>
+    </div>
+    
+    <div class="card-glass stat-card">
+        <div class="stat-icon"><i data-lucide="sprout"></i></div>
+        <div>
+            <div class="stat-value">{{ stats.total_trees }}</div>
+            <div class="stat-label">Trees Planted</div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid Layout -->
+<div class="grid-dashboard-layout">
+    <!-- Left Column: Carbon Calculator & Trends -->
+    <div class="dashboard-left">
+        <!-- Carbon Footprint Overview -->
+        <div class="card-glass active-glow">
+            <div class="card-header-flex">
+                <h3 class="card-title"><i data-lucide="activity"></i> Carbon Footprint Status</h3>
+                <a href="{{ url_for('main.carbon') }}" class="btn-glass"><i data-lucide="refresh-cw"></i> Recalculate</a>
+            </div>
+            
+            {% if latest_carbon %}
+            <div class="carbon-result-grid" style="margin-top: 0.5rem;">
+                <div class="carbon-score-display" style="padding: 1.5rem 1rem;">
+                    <div class="carbon-score-val">{{ stats.latest_carbon }}</div>
+                    <div class="carbon-score-unit">kg CO2e / month</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Based on your calculator input logged on {{ latest_carbon.date.strftime('%b %d, %Y') }}
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-muted);">Emissions Breakdown</h4>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.25rem;">
+                            <span><i data-lucide="car" style="width: 14px; height: 14px; vertical-align: middle; color: var(--primary);"></i> Transport</span>
+                            <strong>{{ latest_carbon.transport_emissions }} kg</strong>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.25rem;">
+                            <span><i data-lucide="zap" style="width: 14px; height: 14px; vertical-align: middle; color: var(--info);"></i> Energy</span>
+                            <strong>{{ latest_carbon.energy_emissions }} kg</strong>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.25rem;">
+                            <span><i data-lucide="trash-2" style="width: 14px; height: 14px; vertical-align: middle; color: var(--warning);"></i> Waste</span>
+                            <strong>{{ latest_carbon.waste_emissions }} kg</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Emissions History Chart -->
+            <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-glass); padding-top: 1.5rem;">
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1rem;">Carbon Emissions History</h4>
+                <div class="chart-container">
+                    <canvas id="carbonHistoryChart"></canvas>
+                </div>
+            </div>
+            
+            {% else %}
+            <div style="text-align: center; padding: 2rem 1rem;">
+                <i data-lucide="info" style="width: 48px; height: 48px; color: var(--info); margin-bottom: 1rem; opacity: 0.8;"></i>
+                <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Calculate Your Carbon Footprint</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 400px; margin: 0 auto 1.5rem;">
+                    Analyze your emissions in detail to receive customized recommendations and establish a baseline comparison.
+                </p>
+                <a href="{{ url_for('main.carbon') }}" class="btn-primary">Get Started <i data-lucide="arrow-right"></i></a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Logs Split Table -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="clock"></i> Recent Activity Logs</h3>
+            
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Value</th>
+                            <th>Date</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in water_logs %}
+                        <tr>
+                            <td><span class="badge badge-info"><i data-lucide="droplet" style="width: 10px; height: 10px; vertical-align: middle;"></i> Water</span></td>
+                            <td>{{ log.liters }} Liters</td>
+                            <td>{{ log.date.strftime('%b %d, %Y') }}</td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">{{ log.notes or '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% for log in electricity_logs %}
+                        <tr>
+                            <td><span class="badge badge-warning"><i data-lucide="zap" style="width: 10px; height: 10px; vertical-align: middle;"></i> Power</span></td>
+                            <td>{{ log.kwh }} kWh</td>
+                            <td>{{ log.date.strftime('%b %d, %Y') }}</td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">{{ log.notes or '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% if not water_logs and not electricity_logs %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                No recent activity logged. Use the quick links to record resource usage.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Waste Distribution & Shortcuts -->
+    <div class="dashboard-right">
+        <!-- Waste Breakdown Chart -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1rem;"><i data-lucide="pie-chart"></i> Waste Distribution</h3>
+            <div class="chart-container" style="height: 220px;">
+                <canvas id="wasteBreakdownChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Quick Logger Shortcuts -->
+        <div class="card-glass">
+            <h3 class="card-title" style="margin-bottom: 1.25rem;"><i data-lucide="plus-circle"></i> Quick Logger</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="{{ url_for('main.water') }}" class="btn-glass" style="justify-content: flex-start; padding: 0.85rem;">
+                    <i data-lucide="droplet" style="color: var(--info);"></i> Record Water Consumption
+                </a>
+                <a href="{{ url_for('main.electricity') }}" class="btn-glass" style="justify-content: flex-start; padding: 0.85rem;">
+                    <i data-lucide="zap" style="color: var(--warning);"></i> Record Electricity Usage
+                </a>
+                <a href="{{ url_for('main.waste') }}" class="btn-glass" style="justify-content: flex-start; padding: 0.85rem;">
+                    <i data-lucide="trash-2" style="color: var(--danger);"></i> Log Waste & Recycling
+                </a>
+                <a href="{{ url_for('main.tree') }}" class="btn-glass" style="justify-content: flex-start; padding: 0.85rem;">
+                    <i data-lucide="sprout" style="color: var(--secondary);"></i> Planted a New Tree
+                </a>
+            </div>
+        </div>
+        
+        <!-- Hackathon Eco Info Widget -->
+        <div class="card-glass" style="background: radial-gradient(circle at 100% 0%, rgba(52, 211, 153, 0.05) 0%, transparent 60%);">
+            <h3 class="card-title" style="margin-bottom: 0.5rem;"><i data-lucide="award"></i> EcoSphere Goal</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                Our platform seeks to digitize sustainability tracking. Every liter of water conserved, kWh saved, tree planted, and kilogram of waste recycled counts towards building a carbon-neutral community environment.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
