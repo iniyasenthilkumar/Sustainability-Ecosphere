@@ -6,6 +6,50 @@ EcoSphere was developed with clean, modular architecture, rendering it highly sc
 
 ---
 
+## 👥 Team
+
+**Team Name:** Hackers 2.0
+
+| Name | Role |
+|------|------|
+| Abishna K. | Team Lead |
+| Iniya S. | Team Member |
+| Aarthi P. | Team Member |
+| Femina N. | Team Member |
+
+---
+
+## 📌 Problem Statement
+
+Sustainability efforts are scattered and invisible. Water, electricity, and waste usage are often not recorded in one place, making it difficult for individuals to understand their overall environmental footprint.
+
+Without trends or historical data, users have limited visibility into whether their daily habits are improving or getting worse. Green actions such as tree planting may also go unrecorded, resulting in a lack of milestones, goals, and motivation to stay consistent.
+
+**EcoSphere addresses this problem by providing a single platform to measure, track, and improve individual sustainability activities.**
+
+---
+
+## 💡 Solution Overview
+
+EcoSphere is a smart sustainability tracking platform that brings multiple environmental metrics together in one place.
+
+The platform allows users to track water usage, electricity consumption, waste management, tree plantation activities, and carbon footprint. A smart dashboard provides live charts and activity history, while goals and milestones encourage users to maintain sustainable habits consistently.
+
+---
+
+## 📊 PPT
+
+**PPT Link:**  
+PASTE YOUR PPT LINK HERE
+
+---
+
+## 🎥 Live Demonstration
+
+[Watch EcoSphere Demo](https://drive.google.com/file/d/13UQd-CXRra6oBKAzrS2XBy2sbAtlVhAM/view?usp=drivesdk)
+
+---
+
 ## 🌟 Key Features
 
 1. **Secure Authentication & Session Management**: Dedicated login and registration screens with hashed credentials using `Werkzeug` secure helpers.
@@ -81,31 +125,39 @@ ecosphere/
 Follow these steps to deploy and run EcoSphere locally:
 
 ### 1. Clone the Project
+
 Open a command prompt in the workspace directory.
 
 ### 2. Set Up Virtual Environment
+
 Create and activate a virtual environment to manage dependencies:
+
 ```bash
 # Create environment
 python -m venv venv
 
 # Activate on Windows (cmd)
 venv\Scripts\activate
+
 # Activate on Windows (PowerShell)
 .\venv\Scripts\activate
+
 # Activate on macOS/Linux
 source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Database Setup
+
 EcoSphere features dual database configurations:
+
 - **Development (Zero-Config SQLite)**: By default, the application will create a local SQLite database named `ecosphere.db` in the project root if no MySQL configurations are provided. You can run the application immediately without database installations.
-- **Production (MySQL)**: 
+- **Production (MySQL)**:
   1. Ensure your MySQL server is running.
   2. Create a database called `ecosphere` (or let the app auto-create it).
   3. Copy `.env.example` to a new file named `.env`:
@@ -119,7 +171,9 @@ EcoSphere features dual database configurations:
   5. The tables will auto-initialize upon launching the app, or you can import `schema.sql` manually.
 
 ### 5. Launch the Application
+
 Run the entry point script:
+
 ```bash
 python run.py
 ```
