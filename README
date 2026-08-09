@@ -1,0 +1,86 @@
+# 🌱 EcoSphere – Smart Sustainability Platform
+
+> 🌍 Making sustainability simple, measurable, and actionable.
+
+## 👥 Team
+
+**Team Name:** [YOUR TEAM NAME]
+
+**Hackathon:** HackMatrix 2K26 – National 24-Hour Hackathon  
+**Organized by:** IEEE Computer Society SBC, MITS Gwalior
+
+---
+
+## 📌 Problem Statement
+
+**[PASTE THE EXACT PROBLEM STATEMENT SELECTED IN ROUND 1 HERE]**
+
+Sustainability is an important challenge that requires individuals and communities to understand their environmental impact and adopt responsible practices.
+
+---
+
+## 💡 Solution Overview
+
+**EcoSphere** is a smart sustainability platform designed to help users understand and improve their environmental impact.
+
+The platform transforms everyday environmental activities into measurable sustainability insights and encourages users to make eco-friendly choices.
+
+EcoSphere focuses on helping users:
+
+- 🌱 Understand their environmental impact
+- ⚡ Track energy usage
+- 💧 Monitor water consumption
+- ♻️ Manage and understand waste
+- 🌍 Calculate carbon footprint
+- 🎯 Build sustainable habits
+- 📊 Visualize their sustainability progress
+
+---
+
+## ✨ Key Features
+
+### 🌍 Carbon Footprint Tracking
+Users can estimate their carbon footprint based on their everyday activities and consumption.
+
+### ⚡ Energy Usage Tracking
+Track electricity usage and understand opportunities to reduce energy consumption.
+
+### 💧 Water Usage Tracking
+Monitor water consumption and encourage responsible water usage.
+
+### ♻️ Waste Management
+Promote proper waste segregation and responsible disposal practices.
+
+### 📊 Sustainability Dashboard
+A centralized dashboard displays sustainability-related data and progress through easy-to-understand visualizations.
+
+### 🎯 Eco Challenges
+Users can participate in simple daily sustainability activities and build better environmental habits.
+
+### 💡 Smart Recommendations
+The platform provides personalized suggestions to help users reduce their environmental impact.
+
+---
+
+## 🏗️ High-Level Architecture
+
+```text
+                👤 User
+                   |
+                   ↓
+          🌐 EcoSphere UI
+                   |
+                   ↓
+          ⚙️ Application Logic
+                   |
+          ┌────────┴────────┐
+          ↓                 ↓
+     🗄️ Database       📊 Analytics
+          |                 |
+          └────────┬────────┘
+                   ↓
+          🌱 Sustainability
+             Insights
+                   |
+                   ↓
+          💡 Eco Recommendations
