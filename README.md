@@ -40,8 +40,8 @@ The platform allows users to track water usage, electricity consumption, waste m
 ## 📊 PPT
 
 **PPT Link:**  
-PASTE YOUR PPT LINK HERE
 
+https://drive.google.com/file/d/1xfgS6Hm_hWNDYGD_8EUCsmmtoNX5UzIr/view?usp=drive_link
 ---
 
 ## 🎥 Live Demonstration
